@@ -6,15 +6,12 @@ const userRoutes = require('./routes/userRoutes');
 const installgameRoutes = require('./routes/install-games-Routes');
 const installusersRoutes = require('./routes/install-users-Routes');
 require('dotenv').config();
-const app = express();
 const cors = require('cors');
-
+const app = express();
 
 connect();
 
-
-const allowedOrigins = ['http://localhost:5173', 'https://server-project-orcin.vercel.app/'];
-
+const allowedOrigins = ['http://localhost:5173', 'https://server-project-orcin.vercel.app'];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -24,15 +21,25 @@ const corsOptions = {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
-  allowedHeaders: ['Content-Type', 'Authorization'], 
-  optionsSuccessStatus: 200, 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); 
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', true);
 
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 app.use(express.json());
 app.use(helmet());
